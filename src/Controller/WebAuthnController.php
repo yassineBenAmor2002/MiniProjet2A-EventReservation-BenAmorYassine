@@ -31,9 +31,9 @@ class WebAuthnController extends AbstractController
 
         if ($service->verifyChallenge($data['challenge'] ?? '') && $service->storeCredential($data)) {
 
-            // ✅ Simulation utilisateur (version simple validée)
+            //Simulation utilisateur (version simple validée)
             $user = new User();
-            $user->setEmail('test@test.com');
+            $user->setUsername('test@test.com');
 
             $token = $jwtManager->create($user);
 
@@ -66,7 +66,7 @@ class WebAuthnController extends AbstractController
         if ($service->verifyChallenge($data['challenge'] ?? '')) {
 
             $user = new User();
-            $user->setEmail('test@test.com');
+            $user->setUsername('test@test.com');
 
             $token = $jwtManager->create($user);
 
