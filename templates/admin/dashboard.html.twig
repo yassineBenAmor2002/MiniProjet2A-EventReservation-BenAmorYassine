@@ -1,0 +1,19 @@
+<h1>Dashboard Admin</h1>
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Date</th>
+        <th>Actions</th>
+    </tr>
+    {% for event in events %}
+        <tr>
+            <td>{{ event.title }}</td>
+            <td>{{ event.date|date('Y-m-d H:i') }}</td>
+            <td>
+                <a href="{{ path('admin_event_reservations', {'id': event.id}) }}">
+                    Voir les réservations
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
