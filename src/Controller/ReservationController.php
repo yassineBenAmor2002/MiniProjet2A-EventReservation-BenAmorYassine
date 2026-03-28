@@ -1,93 +1,50 @@
 <?php
-namespace App\Entity;
+namespace App\Controller;
 
-use App\Repository\ReservationRepository;
-use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Reservation;
 use App\Entity\Event;
+use App\Service\ReservationMailer;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route; // ✅ corrige l'erreur
 
-#[ORM\Entity(repositoryClass: ReservationRepository::class)]
-class Reservation
+class ReservationController extends AbstractController
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    #[Route('/event/{id}/reserve', name: 'event_reserve', methods: ['POST'])]
+    public function reserve(
+        Event $event,
+        Request $request,
+        EntityManagerInterface $em,
+        ReservationMailer $reservationMailer
+    ): Response {
+        $name = trim($request->request->get('name', ''));
+        $email = trim($request->request->get('email', ''));
+        $phone = trim($request->request->get('phone', ''));
 
-    #[ORM\ManyToOne(targetEntity: Event::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Event $event = null;
+        if (!$name || !$email || !$phone) {
+            $this->addFlash('error', 'Tous les champs sont obligatoires.');
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $name = null;
+        $reservation = new Reservation();
+        $reservation->setEvent($event)
+                    ->setName($name)
+                    ->setEmail($email)
+                    ->setPhone($phone)
+                    ->setCreatedAt(new \DateTime());
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $email = null;
+        $em->persist($reservation);
+        $em->flush();
 
-    #[ORM\Column(type: 'string', length: 20)]
-    private ?string $phone = null;
+        try {
+            $reservationMailer->sendConfirmation($reservation);
+            $this->addFlash('success', 'Votre réservation a été confirmée ! Un email de confirmation a été envoyé.');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'La réservation a été enregistrée mais le mail n’a pas pu être envoyé.');
+        }
 
-    #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    // GETTERS & SETTERS
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getEvent(): ?Event
-    {
-        return $this->event;
-    }
-
-    public function setEvent(Event $event): self
-    {
-        $this->event = $event;
-        return $this;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-        return $this;
-    }
-
-    public function getPhone(): ?string
-    {
-        return $this->phone;
-    }
-
-    public function setPhone(string $phone): self
-    {
-        $this->phone = $phone;
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-        return $this;
+        return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
     }
 }
