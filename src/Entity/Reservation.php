@@ -14,22 +14,85 @@ class Reservation
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
-    private ?Event $reservations = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Event $event = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
+
+    #[ORM\Column(length: 20)]
+    private ?string $phone = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTime $createdAt = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
+
+    // --- Getters et Setters ---
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getReservations(): ?Event
+    public function getEvent(): ?Event
     {
-        return $this->reservations;
+        return $this->event;
     }
 
-    public function setReservations(?Event $reservations): static
+    public function setEvent(?Event $event): static
     {
-        $this->reservations = $reservations;
+        $this->event = $event;
+        return $this;
+    }
 
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(string $phone): static
+    {
+        $this->phone = $phone;
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTime $createdAt): static
+    {
+        $this->createdAt = $createdAt;
         return $this;
     }
 }

@@ -1,0 +1,6 @@
+<form action="{{ path('event_reserve', {'id': event.id}) }}" method="POST">
+    <input type="text" name="name" placeholder="Votre nom" required>
+    <input type="email" name="email" placeholder="Votre email" required>
+    <input type="text" name="phone" placeholder="Téléphone" required>
+    <button type="submit">Réserver</button>
+</form>

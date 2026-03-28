@@ -15,13 +15,14 @@ class Event
     #[ORM\Column]
     private ?int $id = null;
 
+    // Correspond à la colonne 'event' dans MySQL
     #[ORM\Column(length: 255)]
-    private ?string $Event = null;
+    private ?string $event = null;
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'datetime')]
     private ?\DateTime $date = null;
 
     #[ORM\Column(length: 255)]
@@ -33,16 +34,24 @@ class Event
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
-    /**
-     * @var Collection<int, Reservation>
-     */
-    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'reservations')]
+    // Champs pour created_at et updated_at
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTime $created_at = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTime $updated_at = null;
+
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: Reservation::class, cascade: ['persist', 'remove'])]
     private Collection $reservations;
 
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
+        $this->created_at = new \DateTime();  // valeur par défaut à la création
+        $this->updated_at = new \DateTime();  // valeur initiale
     }
+
+    // --- Getters et Setters ---
 
     public function getId(): ?int
     {
@@ -51,13 +60,12 @@ class Event
 
     public function getEvent(): ?string
     {
-        return $this->Event;
+        return $this->event;
     }
 
-    public function setEvent(string $Event): static
+    public function setEvent(string $event): static
     {
-        $this->Event = $Event;
-
+        $this->event = $event;
         return $this;
     }
 
@@ -69,7 +77,6 @@ class Event
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -81,7 +88,6 @@ class Event
     public function setDate(\DateTime $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
@@ -93,7 +99,6 @@ class Event
     public function setLocation(string $location): static
     {
         $this->location = $location;
-
         return $this;
     }
 
@@ -105,7 +110,6 @@ class Event
     public function setSeats(int $seats): static
     {
         $this->seats = $seats;
-
         return $this;
     }
 
@@ -117,7 +121,28 @@ class Event
     public function setImage(?string $image): static
     {
         $this->image = $image;
+        return $this;
+    }
 
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTime $created_at): static
+    {
+        $this->created_at = $created_at;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTime $updated_at): static
+    {
+        $this->updated_at = $updated_at;
         return $this;
     }
 
@@ -133,21 +158,18 @@ class Event
     {
         if (!$this->reservations->contains($reservation)) {
             $this->reservations->add($reservation);
-            $reservation->setReservations($this);
+            $reservation->setEvent($this);
         }
-
         return $this;
     }
 
     public function removeReservation(Reservation $reservation): static
     {
         if ($this->reservations->removeElement($reservation)) {
-            // set the owning side to null (unless already changed)
-            if ($reservation->getReservations() === $this) {
-                $reservation->setReservations(null);
+            if ($reservation->getEvent() === $this) {
+                $reservation->setEvent(null);
             }
         }
-
         return $this;
     }
 }
