@@ -23,4 +23,18 @@ class WebauthnCredentialRepository extends ServiceEntityRepository
 
     // Ici tu peux ajouter des méthodes personnalisées, par exemple :
     // public function findByUser(User $user): array { ... }
+
+    public function findOneByCredentialId(string $credentialId): ?WebauthnCredential
+    {
+        return $this->findOneBy(['credentialId' => $credentialId]);
+    }
+
+    public function save(WebauthnCredential $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
 }

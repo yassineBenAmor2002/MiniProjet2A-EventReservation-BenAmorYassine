@@ -61,6 +61,18 @@
             "./config/packages/lexik_jwt_authentication.yaml"
         ]
     },
+    "nyholm/psr7": {
+        "version": "1.8",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "4a8c0345442dcca1d8a2c65633dcf0285dd5a5a2"
+        },
+        "files": [
+            "./config/packages/nyholm_psr7.yaml"
+        ]
+    },
     "phpunit/phpunit": {
         "version": "11.5",
         "recipe": {
@@ -217,6 +229,15 @@
             "./config/packages/notifier.yaml"
         ]
     },
+    "symfony/phpunit-bridge": {
+        "version": "8.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "7.3",
+            "ref": "dc13fec96bd527bd399c3c01f0aab915c67fd544"
+        }
+    },
     "symfony/property-info": {
         "version": "7.4",
         "recipe": {
@@ -356,5 +377,14 @@
     },
     "twig/extra-bundle": {
         "version": "v3.24.0"
+    },
+    "web-auth/webauthn-symfony-bundle": {
+        "version": "4.9",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "a5dff33bd46575bea263af94069650af7742dcb6"
+        }
     }
 }

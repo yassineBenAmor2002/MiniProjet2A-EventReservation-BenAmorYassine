@@ -3,29 +3,51 @@ security:
     Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
   providers:
+    admin_provider:
+      entity:
+        class: App\Entity\Admin
+        property: username
+
     app_user_provider:
       entity:
         class: App\Entity\User
-        property: username
+        property: email
 
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
 
+    admin:
+      pattern: ^/admin
+      provider: admin_provider
+      form_login:
+        login_path: admin_login
+        check_path: admin_login
+        default_target_path: admin_dashboard
+      logout:
+        path: admin_logout
+        target: admin_login
+
     auth_api:
-      pattern: ^/api/auth
+      pattern: ^/api/auth/(register|login)
       stateless: true
-      provider: app_user_provider
+      security: false
 
     api:
       pattern: ^/api
       stateless: true
+      provider: app_user_provider
+      entry_point: jwt
       jwt: ~
+      refresh_jwt:
+        check_path: /api/token/refresh
 
   access_control:
-    - { path: ^/api/auth, roles: PUBLIC_ACCESS }
+    - { path: ^/api/auth/(register|login), roles: PUBLIC_ACCESS }
     - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+    - { path: ^/api/webauthn, roles: ROLE_ADMIN }
     - { path: ^/api/admin, roles: ROLE_ADMIN }
     - { path: ^/api, roles: ROLE_USER }
+    - { path: ^/admin/login, roles: PUBLIC_ACCESS }
     - { path: ^/admin, roles: ROLE_ADMIN }

@@ -15,9 +15,8 @@ class Event
     #[ORM\Column]
     private ?int $id = null;
 
-    // Correspond à la colonne 'event' dans MySQL
     #[ORM\Column(length: 255)]
-    private ?string $event = null;
+    private ?string $title = null;
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
@@ -58,14 +57,14 @@ class Event
         return $this->id;
     }
 
-    public function getEvent(): ?string
+    public function getTitle(): ?string
     {
-        return $this->event;
+        return $this->title;
     }
 
-    public function setEvent(string $event): static
+    public function setTitle(string $title): static
     {
-        $this->event = $event;
+        $this->title = $title;
         return $this;
     }
 

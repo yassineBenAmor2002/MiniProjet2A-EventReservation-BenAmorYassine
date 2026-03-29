@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Login{% endblock %}
+
+{% block body %}
+    <h1>Connexion Administrateur</h1>
+
+    {% if error %}
+        <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ path('admin_login') }}">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="_username" value="{{ last_username }}" required autofocus>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="_password" required>
+
+        <button type="submit">Se connecter</button>
+    </form>
+{% endblock %}

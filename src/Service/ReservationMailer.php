@@ -28,7 +28,7 @@ class ReservationMailer
                  <p>Date : %s</p>
                  <p>Merci !</p>',
                 htmlspecialchars($reservation->getName()),
-                htmlspecialchars($event->getEvent()), // ← ici : utiliser getEvent()
+                htmlspecialchars($event->getTitle()), // ✅ Utilisation de getTitle()
                 $event->getDate()->format('d/m/Y H:i')
             ));
 

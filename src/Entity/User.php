@@ -2,21 +2,27 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private Uuid $id;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, unique: true)]
     private ?string $username = null;
+
+    #[ORM\Column(length: 180, unique: true)]
+    private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
@@ -24,7 +30,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    public function getId(): ?int
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: WebauthnCredential::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $webauthnCredentials;
+
+    public function __construct()
+    {
+        $this->id = Uuid::v4();
+        $this->webauthnCredentials = new ArrayCollection();
+    }
+
+    public function getId(): Uuid
     {
         return $this->id;
     }
@@ -40,14 +55,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+        return $this;
+    }
+
     public function getUserIdentifier(): string
     {
-        return $this->username;
+        return (string) $this->email;
     }
 
     public function getRoles(): array
     {
-        return $this->roles ?: ['ROLE_USER'];
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+        return array_unique($roles);
     }
 
     public function setRoles(array $roles): static
@@ -69,6 +97,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // rien pour l'instant
+    }
+
+    /**
+     * @return Collection<int, WebauthnCredential>
+     */
+    public function getWebauthnCredentials(): Collection
+    {
+        return $this->webauthnCredentials;
+    }
+
+    public function addWebauthnCredential(WebauthnCredential $webauthnCredential): static
+    {
+        if (!$this->webauthnCredentials->contains($webauthnCredential)) {
+            $this->webauthnCredentials->add($webauthnCredential);
+            $webauthnCredential->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeWebauthnCredential(WebauthnCredential $webauthnCredential): static
+    {
+        if ($this->webauthnCredentials->removeElement($webauthnCredential)) {
+            if ($webauthnCredential->getUser() === $this) {
+                $webauthnCredential->setUser(null);
+            }
+        }
+        return $this;
     }
 }

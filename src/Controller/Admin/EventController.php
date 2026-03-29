@@ -24,7 +24,7 @@ class EventController extends AbstractController
     public function create(EntityManagerInterface $em): JsonResponse
     {
         $event = new Event();
-        $event->setEvent("Test Event");
+        $event->setTitle("Test Event");
         $event->setDescription("Description...");
         $event->setLocation("Sousse");
         $event->setSeats(100);

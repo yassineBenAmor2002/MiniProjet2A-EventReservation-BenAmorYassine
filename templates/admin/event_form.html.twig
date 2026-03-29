@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if mode == 'edit' %}Modifier événement{% else %}Créer événement{% endif %}
+{% endblock %}
+
+{% block body %}
+    <h1>
+        {% if mode == 'edit' %}Modifier l'événement{% else %}Créer un événement{% endif %}
+    </h1>
+
+    {% for message in app.flashes('error') %}
+        <div>{{ message }}</div>
+    {% endfor %}
+
+    <form method="post">
+        <label>Titre</label>
+        <input type="text" name="title" value="{{ event.title ?? '' }}" required>
+
+        <label>Description</label>
+        <input type="text" name="description" value="{{ event.description ?? '' }}" required>
+
+        <label>Date</label>
+        <input type="datetime-local" name="date" value="{{ event.date ? event.date|date('Y-m-d\\TH:i') : '' }}" required>
+
+        <label>Lieu</label>
+        <input type="text" name="location" value="{{ event.location ?? '' }}" required>
+
+        <label>Places</label>
+        <input type="number" name="seats" min="1" value="{{ event.seats ?? 1 }}" required>
+
+        <label>Image (URL ou chemin)</label>
+        <input type="text" name="image" value="{{ event.image ?? '' }}">
+
+        <button type="submit">Enregistrer</button>
+    </form>
+
+    <a href="{{ path('admin_dashboard') }}">← Retour</a>
+{% endblock %}

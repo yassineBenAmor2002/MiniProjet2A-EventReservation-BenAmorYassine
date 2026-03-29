@@ -1,4 +1,10 @@
 <h1>Dashboard Admin</h1>
+
+<div>
+    <a href="{{ path('admin_event_new') }}">Créer un événement</a>
+    |
+    <a href="{{ path('admin_logout') }}">Déconnexion</a>
+</div>
 <table>
     <tr>
         <th>Title</th>
@@ -13,6 +19,13 @@
                 <a href="{{ path('admin_event_reservations', {'id': event.id}) }}">
                     Voir les réservations
                 </a>
+                |
+                <a href="{{ path('admin_event_edit', {'id': event.id}) }}">Modifier</a>
+                |
+                <form method="post" action="{{ path('admin_event_delete', {'id': event.id}) }}" style="display:inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_event_' ~ event.id) }}">
+                    <button type="submit">Supprimer</button>
+                </form>
             </td>
         </tr>
     {% endfor %}

@@ -12,7 +12,7 @@ use App\Entity\User;
 
 class WebAuthnController extends AbstractController
 {
-    #[Route('/api/webauthn/register/options', methods: ['POST'])]
+    #[Route('/_deprecated/webauthn/register/options', methods: ['POST'])]
     public function registerOptions(WebAuthnService $service): JsonResponse
     {
         return $this->json([
@@ -21,7 +21,7 @@ class WebAuthnController extends AbstractController
         ]);
     }
 
-    #[Route('/api/webauthn/register/verify', methods: ['POST'])]
+    #[Route('/_deprecated/webauthn/register/verify', methods: ['POST'])]
     public function registerVerify(
         Request $request,
         WebAuthnService $service,
@@ -46,7 +46,7 @@ class WebAuthnController extends AbstractController
         return $this->json(['error' => 'Invalid'], 400);
     }
 
-    #[Route('/api/webauthn/login/options', methods: ['POST'])]
+    #[Route('/_deprecated/webauthn/login/options', methods: ['POST'])]
     public function loginOptions(WebAuthnService $service): JsonResponse
     {
         return $this->json([
@@ -55,7 +55,7 @@ class WebAuthnController extends AbstractController
         ]);
     }
 
-    #[Route('/api/webauthn/login/verify', methods: ['POST'])]
+    #[Route('/_deprecated/webauthn/login/verify', methods: ['POST'])]
     public function loginVerify(
         Request $request,
         WebAuthnService $service,
