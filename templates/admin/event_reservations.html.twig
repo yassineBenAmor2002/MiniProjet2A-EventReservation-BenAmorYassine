@@ -3,32 +3,93 @@
 {% block title %}Réservations pour {{ event.title }}{% endblock %}
 
 {% block body %}
-<h1>Réservations pour l'événement : {{ event.title }}</h1>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar (Reuse same as dashboard) -->
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse shadow-sm" style="min-height: 90vh;">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('admin_dashboard') }}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ path('admin_event_new') }}">
+                            <i class="bi bi-plus-circle"></i> Nouvel Événement
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{{ path('admin_logout') }}">
+                            <i class="bi bi-box-arrow-right"></i> Déconnexion
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
-<table border="1" cellpadding="5">
-    <thead>
-        <tr>
-            <th>Nom</th>
-            <th>Email</th>
-            <th>Téléphone</th>
-            <th>Date de réservation</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for reservation in reservations %}
-            <tr>
-                <td>{{ reservation.name }}</td>
-                <td>{{ reservation.email }}</td>
-                <td>{{ reservation.phone }}</td>
-                <td>{{ reservation.createdAt|date('d/m/Y H:i') }}</td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">Aucune réservation pour cet événement.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Réservations : {{ event.title }}</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="{{ path('admin_dashboard') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour au dashboard
+                    </a>
+                </div>
+            </div>
 
+            <!-- Event Summary -->
+            <div class="alert alert-info shadow-sm mb-4">
+                <div class="row">
+                    <div class="col-md-4"><strong>Date :</strong> {{ event.date|date('d/m/Y H:i') }}</div>
+                    <div class="col-md-4"><strong>Lieu :</strong> {{ event.location }}</div>
+                    <div class="col-md-4"><strong>Total Réservations :</strong> {{ reservations|length }} / {{ event.seats }} places</div>
+                </div>
+            </div>
+
+            <!-- Reservations Table -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Liste des participants</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Téléphone</th>
+                                    <th>Date Réservation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reservation in reservations %}
+                                    <tr>
+                                        <td><strong>{{ reservation.name }}</strong></td>
+                                        <td>{{ reservation.email }}</td>
+                                        <td>{{ reservation.phone }}</td>
+                                        <td>{{ reservation.createdAt|date('d/m/Y H:i') }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">Aucune réservation pour cet événement.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+    .sidebar .nav-link { font-weight: 500; color: #333; padding: 0.5rem 1rem; }
+    .sidebar .nav-link i { margin-right: 0.5rem; }
+    .sidebar .nav-link.active { color: #007bff; }
+</style>
 <a href="{{ path('admin_dashboard') }}">← Retour au dashboard</a>
 {% endblock %}

@@ -1,32 +1,122 @@
-<h1>Dashboard Admin</h1>
+{% extends 'base.html.twig' %}
 
-<div>
-    <a href="{{ path('admin_event_new') }}">Créer un événement</a>
-    |
-    <a href="{{ path('admin_logout') }}">Déconnexion</a>
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse shadow-sm" style="min-height: 90vh;">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ path('admin_dashboard') }}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ path('admin_event_new') }}">
+                            <i class="bi bi-plus-circle"></i> Nouvel Événement
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{{ path('admin_logout') }}">
+                            <i class="bi bi-box-arrow-right"></i> Déconnexion
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Gestion des Événements</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="{{ path('admin_event_new') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-plus-lg"></i> Ajouter un événement
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Événements</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ events|length }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-calendar-event fs-2 text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Table -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">Liste des événements</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Date</th>
+                                    <th>Lieu</th>
+                                    <th>Places</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in events %}
+                                    <tr>
+                                        <td><strong>{{ event.title }}</strong></td>
+                                        <td>{{ event.date|date('d/m/Y H:i') }}</td>
+                                        <td>{{ event.location }}</td>
+                                        <td>{{ event.seats }}</td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ path('admin_event_reservations', {'id': event.id}) }}" class="btn btn-sm btn-info text-white" title="Voir réservations">
+                                                    <i class="bi bi-people"></i>
+                                                </a>
+                                                <a href="{{ path('admin_event_edit', {'id': event.id}) }}" class="btn btn-sm btn-warning text-white" title="Modifier">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <form method="post" action="{{ path('admin_event_delete', {'id': event.id}) }}" style="display:inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_event_' ~ event.id) }}">
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Supprimer">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4">Aucun événement trouvé.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
-<table>
-    <tr>
-        <th>Title</th>
-        <th>Date</th>
-        <th>Actions</th>
-    </tr>
-    {% for event in events %}
-        <tr>
-            <td>{{ event.title }}</td>
-            <td>{{ event.date|date('Y-m-d H:i') }}</td>
-            <td>
-                <a href="{{ path('admin_event_reservations', {'id': event.id}) }}">
-                    Voir les réservations
-                </a>
-                |
-                <a href="{{ path('admin_event_edit', {'id': event.id}) }}">Modifier</a>
-                |
-                <form method="post" action="{{ path('admin_event_delete', {'id': event.id}) }}" style="display:inline">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete_event_' ~ event.id) }}">
-                    <button type="submit">Supprimer</button>
-                </form>
-            </td>
-        </tr>
-    {% endfor %}
-</table>
+
+<style>
+    .sidebar .nav-link { font-weight: 500; color: #333; padding: 0.5rem 1rem; }
+    .sidebar .nav-link i { margin-right: 0.5rem; }
+    .sidebar .nav-link.active { color: #007bff; }
+    .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+</style>
+{% endblock %}

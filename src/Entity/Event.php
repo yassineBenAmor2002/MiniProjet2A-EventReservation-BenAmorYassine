@@ -6,14 +6,14 @@ use App\Repository\EventRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private Uuid $id;
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
@@ -45,6 +45,7 @@ class Event
 
     public function __construct()
     {
+        $this->id = Uuid::v4();
         $this->reservations = new ArrayCollection();
         $this->created_at = new \DateTime();  // valeur par défaut à la création
         $this->updated_at = new \DateTime();  // valeur initiale
@@ -52,7 +53,7 @@ class Event
 
     // --- Getters et Setters ---
 
-    public function getId(): ?int
+    public function getId(): Uuid
     {
         return $this->id;
     }

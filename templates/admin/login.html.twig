@@ -1,21 +1,50 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin Login{% endblock %}
+{% block title %}Connexion Administrateur{% endblock %}
 
 {% block body %}
-    <h1>Connexion Administrateur</h1>
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-md-5">
+            <div class="card shadow border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-person-lock fs-1 text-primary"></i>
+                        <h1 class="h3 mt-3 fw-bold">Administration</h1>
+                        <p class="text-muted">Connectez-vous pour gérer vos événements</p>
+                    </div>
 
-    {% if error %}
-        <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+                    {% if error %}
+                        <div class="alert alert-danger border-0 shadow-sm mb-4">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    {% endif %}
 
-    <form method="post" action="{{ path('admin_login') }}">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="_username" value="{{ last_username }}" required autofocus>
+                    <form method="post" action="{{ path('admin_login') }}">
+                        <div class="form-floating mb-3">
+                            <input type="text" id="username" name="_username" class="form-control" value="{{ last_username }}" required autofocus placeholder="Nom d'utilisateur">
+                            <label for="username">Nom d'utilisateur</label>
+                        </div>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="_password" required>
+                        <div class="form-floating mb-4">
+                            <input type="password" id="password" name="_password" class="form-control" required placeholder="Mot de passe">
+                            <label for="password">Mot de passe</label>
+                        </div>
 
-        <button type="submit">Se connecter</button>
-    </form>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <a href="{{ path('app_home') }}" class="text-decoration-none text-mutedSmall">
+                            <i class="bi bi-arrow-left me-1"></i>Retour au site
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
